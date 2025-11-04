@@ -1,0 +1,587 @@
+---
+title: "Age-Specific Racial Disparities in the Incidence of Fatal Prostate Cancer: An Analytic Deconstruction"
+author: "Mohamed Albirair"
+# output: pdf_document
+output:
+  # word_document:
+  bookdown::word_document2:
+    reference_docx: docx_template_2.docx
+    number_sections: no
+    # citation_package: natbib
+
+header-includes:
+  - \usepackage{float}
+  - \floatplacement{figure}{H}  #make every figure with caption = h, this was the fix
+  - \usepackage{xcolor}
+  # https://stackoverflow.com/questions/31007986/knitr-less-greater-than-sign-displayed-as-and
+  - \usepackage{lmodern}
+  - \usepackage[T1]{fontenc}
+  - \usepackage{fancyhdr}
+  - \pagestyle{fancy}
+  - \fancyhead[L]{MANUSCRIPT AUTHORS}
+  - \fancyhead[R]{MANUSCRIPT SHORT TITLE}
+  # - \usepackage[nomarkers,tablesfirst]{endfloat} # For figures and tables at end
+  - \newtheorem{theorem}{Theorem} #  meant for continuous numbers.
+  - \newtheorem{proposition}[theorem]{Proposition} # %%\newtheorem{proposition}{Proposition}" # to get separate numbers for theorem and proposition etc.
+  - \newtheorem{example}{Example}
+  - \newtheorem{remark}{Remark}
+  - \newtheorem{definition}{Definition}
+  - \usepackage{lineno}
+  - \usepackage{amsmath}
+  - \linenumbers
+  - \usepackage{footmisc}
+  - \renewcommand{\thefootnote}{\alph{footnote}}
+  - \newcommand\figref[1]{{\hypersetup{linkcolor=red}\autoref{#1}}}
+bibliography: fpcarefs.bib  
+csl: american-medical-association.csl
+link-citations: true
+linkcolor: green
+urlcolor: blue
+fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+      echo       = FALSE, # By default, hide code; set to TRUE to see code
+      warning    = FALSE,
+      error      = FALSE,
+      message    = FALSE,
+      fig.pos    = 'H', # Places figures at top or here
+      # fig.align  = 'center',
+      table.pos  = 'H', #"htbp",
+  #     `h` (here): Place the table at the location where it appears in the code.
+  # - `t` (top): Place the table at the top of the page.
+  # - `b` (bottom): Place the table at the bottom of the page.
+  # - `p` (page): Place the table on a dedicated page.
+  # - `!`: Override LaTeX's internal algorithms to attempt to honor your positioning request.
+
+      out.width  = '70%',
+      fig.height = 4,
+      dpi        = 300, # Figure resolution and size
+      fig.env    = "figure"
+      ) # Latex figure environment
+knitr::knit_hooks$set(crop = knitr::hook_pdfcrop)
+pacman::p_load(tidyverse, flextable)
+options(knitr.table.format = "latex") # For kable tables to write LaTeX table directly
+```
+
+# Author names
+
+1. Mohamed Albirair ^1,^ ^2^ *(corresponding author)*
+
+2. Yaw Nyame ^2,^ ^3^
+
+3. Roman Gulati ^2^
+
+4. Ruth Etzioni ^2,^ ^4^
+
+# Affiliations
+1. Department of Global Health, University of Washington, 3980 15th Ave NE, seventh and eighth floors, Seattle, Washington, 98105, United States
+
+2. Division of Public Health Sciences, Fred Hutch Cancer Center, 1100 Fairview Ave N, Seattle, Washington, 98109, United States
+
+3. Department of Urology, University of Washington Medical Center, 1959 NE Pacific St Main Hospital, Seattle, Washington, 98105, United States
+
+4. Department of Health Systems and Population Health, University of Washington, 3980 15th Ave NE, fourth floor, Seattle, Washington, 98105, United States
+
+\newpage
+
+# Cover Letter
+
+Dear Editor-in-Chief,
+
+We are pleased to submit our original manuscript entitled "Age-Specific Racial Disparities in the Incidence of Fatal Prostate Cancer: An Analytic Deconstruction" for consideration for publication in the Journal of the National Cancer Institute (JNCI).
+
+Prostate cancer continues to be a significant public health concern, with racial disparities in outcomes that are well-documented but not fully understood. In our manuscript, we build on previous work that introduced a novel metric for quantifying disparities in prostate cancer, particularly focusing on the incidence of fatal disease. Our study takes this a step further by deconstructing these patterns to better understand the underlying drivers of disparities in the incidence of fatal prostate cancer, specifically those that result in death within 10 years of diagnosis.
+
+Through our analysis, we were able to reproduce results comparable to those of the primary article, reinforcing the robustness of the original findings. More importantly, our study reveals that age-specific patterns of disparities in the incidence of fatal prostate cancer are driven predominantly by disparities in incidence rather than mortality. This insight is crucial, as it underscores the need for more nuanced, race-specific prostate cancer screening guidelines. The implications of our findings further support the growing recognition that such tailored approaches could play a vital role in reducing racial disparities in prostate cancer outcomes.
+
+In addition to these findings, our manuscript lays the groundwork for future work utilizing the Fred Hutch CISNET prostate cancer model, PSAPC, to project the potential impact of race-specific screening strategies on these observed disparities. By quantifying the effects of targeted screening, we aim to contribute to the development of more effective public health policies that address these significant racial disparities in prostate cancer outcomes.
+
+We believe that our findings will be of great interest to the readers of JNCI, particularly those engaged in cancer epidemiology, health disparities research, and public health policy. Our study not only advances the understanding of the mechanisms driving racial disparities in prostate cancer but also provides a foundation for future research aimed at mitigating these disparities through evidence-based interventions.
+
+Thank you for considering our manuscript for publication. We look forward to your feedback and hope to contribute to the important discourse on cancer disparities in JNCI.
+
+Sincerely,
+
+**Mohamed Albirair**
+
+Research Assitant
+
+Etzioni Lab, Fred Hutch Cancer Center
+
+
+\newpage
+
+# Abstract
+
+**Background:** Black men in the United States bear a disproportionate share of the prostate cancer (PCa) burden, with more than 50% higher incidence and double the mortality compared with White men. Previous studies have examined racial disparities in the incidence of fatal PCa (fPCa), defined as diagnosis leading to disease-specific death within 10 years and found that they are greater in younger versus older men. However, the extent to which these trends are driven by disparities in incidence or survival is unknown.
+
+**Methods:** We decompose the incidence of fPCa into incidence and 10-year probability of death and quantify the relative disparities in these metrics by age at diagnosis using data from the Surveillance, Epidemiology, and End Results program over the period 1980-2009.
+  
+**Findings:** We find that relative PCa incidence for Black versus White men significantly decreases by 0.116 units with higher age group (95% CI = -0.183 to -0.049) but the relative probability of death within 10 years does not differ significantly by age (slope = -0.012, 95% CI = -0.060 to 0.035). Further, this deconstruction is similar before and after the introduction of prostate-specific antigen screening.
+
+**Conclusion:** We conclude that higher relative incidence of fPCa in young Black men vs young White men is largely driven by their significantly increased incidence of disease. This finding supports investigating targeted screening of Black men beginning at younger ages than White men.
+  
+\newpage
+
+# Introduction
+
+Remarkable racial inequities in health in the United States persist in spite of efforts to reduce them. Progress has been made in understanding underlying factors [@williams_reducing_2019; @zavala_cancer_2021]. Black men bear a disproportionate share of the cancer burden, having one of the highest death rates of any racial or ethnic group for most cancers [@desantis_cancer_2016; @desantis_cancer_2019; @okeefe_health_2015]. Specifically for prostate cancer (PCa), Black men have more than 50% higher incidence, are more likely to present with distant metastases, and are more than twice as likely die of the disease compared with non-Hispanic White men [@dess_association_2019; @wen_racial_2021]. Although absolute PCa death rates of both Black and White men have declined since the early 1990s, relative rates have remained essentially unchanged [@desantis_cancer_2016].
+
+The reasons for the disparities have not been fully determined. Studies have attributed disparities in PCa incidence to the higher risk of onset among Black men compared to White men [@chowdhury-paulino_racial_2021]. A modeling study of PCa natural history found that Black men had higher risk of preclinical onset at all ages and, given onset, higher risk of metastatic progression than men in the general population [@tsodikov_is_2017]. Other studies have attributed disparities in mortality to deficiencies in access to care, wherein Black men tend to have lower socioeconomic status and therefore poorer access. This explanation is supported by studies conducted in "equal-access health care systems"—or when high quality care is equitably utilized—that show similar mortality outcomes for Black men compared with White men [@dess_association_2019; @graham-steed_race_2013; @riviere_survival_2020; @Nyame2022].
+
+A key challenge with studying racial disparities in the burden of PCa is that screening can lead to overdiagnosis—i.e., diagnosis of cancers that would not have been diagnosed without screening. For this reason, disparities in overall incidence reflect a mixture of disparities in both low- and high-risk cases. Recent attention has been given to studying racial disparities in the incidence of fatal PCa (fPCa), operationalized as incidence of PCa that causes death within 10 years. This restricted measure of PCa burden avoids more complicated comparisons between racial groups due to potentially different rates of overdiagnosis and, because it is defined using both diagnosis and survival [@vollmer_dynamics_2012], reflects the burden of the most lethal disease. Kelly and colleagues compared age-specific fPCa incidence between 1975 and 2002 and concluded that relative disparities were notably higher among younger men [@kelly_trends_2017]. They highlighted the importance of understanding the underlying causes of these disparities to better inform and implement strategies aimed at eliminating them. However, to the best of our knowledge, no subsequent studies have specifically examined age-specific disparities in fPCa.
+
+In this study, we further examine the age dependence of racial disparities in fPCa in the United States. Our first objective is to assess whether age-specific patterns of racial disparities in fPCa incidence are driven by disparities in incidence, fatality (defined as death from prostate cancer within 10 years after diagnosis), or both. Additionally, we partition our analysis into the pre-PSA years (prior to 1990) vs later [@Mariotto2007], permitting us to evaluate whether mass opportunistic PSA screening impacted racial disparities in fPCa. Our analyses provide new insight into specific screening strategies for achieving greater equity in fPCa between Black and White men in the US.
+
+# Methods
+
+Our goal of this analysis was to examine disparities in the burden of fatal prostate cancer and how they vary by age group. Our metric for the burden of fatal prostate cancer was the incidence of disease leading to disease-specific death within a specified period (Vollmer, 2012), here 10 years. We label this measure as the fatal prostate cancer indigence (fPCa). This measure was chosen to facilitate comparison of the resulting racial disparity measure across age groups. Specifically, the racial disparity in a given group is the ratio of fPCa incidence for Black vs. White men in that age group. The reason for this choice is to induce comparability of the cases included across age groups; since these cases are constrained to be those who died within 10 years of diagnosis. If, as an alternative, we defined the racial disparity measure as the ratio of mortality for Black vs. White men, this would result in a completely different rage of survival times for younger for older men, corresponding to potentially very different disease profiles.
+
+We used data from the Surveillance, Epidemiology, and End Results (SEER) registry of the National Cancer Institute^[https://www.seer.cancer.gov/]. We included data from the 9 original SEER registries spanning the period between 1975 and 2017, through the National Cancer Institute SEER*Stat software version 8.3.8^[https://www.seer.cancer.gov/seerstat]. We obtained point estimates of annual incidence and 10-year net disease-specific survival for 5-year age groups between 45 and 80 years for White and Black men. Net disease-specific survival is defined in SEER as the proportion of patients alive at a certain timepoint subsequent to the diagnosis of their cancer, considering deaths only from the respective cancer and censoring other causes of death^[https://www.seer.cancer.gov/statistics/types/survival.html].
+
+For fPCa, we used incidence of PCa leading to death within 10 years, combining incidence and disease-specific survival. Formally, we multiplied incidence by one minus the 10-year net cause-specific survival. For each metric, we calculated relative ratios (RRs) for Black versus White men by age. To estimate standard errors for the relative ratios, we used the delta method (Appendix A). We tested for non-constant age-related trends using weighted linear regression models with response variable given by the RR and predictor given by age group.
+
+We defined two calendar periods reflecting pre-PSA years and PSA years. For the pre-PSA era, we used the years 1980-1989, reflecting years just prior to the rapid adoption of PSA screening uptake in the United State [@Mariotto2007]. For the PSA era, we data from the years 2000-2009, after the period of PSA dissemination. We omit the initial screening dissemination period (1990-1999) to focus on periods of relatively stable diagnostic practices. All calculations are performed separately for both eras. To test for differences in age rel0ated trends in the RR across eras, we included an interaction term for age and era in the weighted linear regression models.
+
+
+```{r callfunx}
+# this is a code for the theme of ggplot visualizations--it is publicly available on my GitHub page for 
+source("https://raw.githubusercontent.com/Mohamed-Albirair/my-R-functions/main/goldenScatterCAtheme.R")
+
+# Absolute metrics visualizations
+source("../../../Manual-functions/absViz.R")
+
+# Convert absolute to relative metrics
+source("../../../Manual-functions/abs_to_rel_2.R")
+
+# Relative metrics visualizations
+source("../../../Manual-functions/relViz.R")
+
+# Running linear regression for trend analysis
+source("../../../Manual-functions/lm_reg.R")
+
+# Display regression outputs
+source("../../../Manual-functions/kableOutput.R")
+
+# Extract regression outcomes
+source("https://raw.githubusercontent.com/Mohamed-Albirair/my-R-functions/main/modOutput.R")
+```
+
+```{r presentobjects}
+disease <- "Prostate cancer"
+ageGroups_label <- c("45-49", "50-54", "55-59", "60-64", "65-69", "70-74", "75-79", "80-84")
+mod_params <- c("Intercept", "Age group", "Era", "Age group \u00D7 era")
+```
+
+```{r icidencedata}
+pcinc <- "~/../Dropbox/Ruth-Mohamed independent study/Data/PC_incid_early_late_Kelly_agegroups.csv" %>% read.csv() %>%
+      mutate_at(4:6, readr::parse_number) %>%
+      mutate(AgeGroup = str_remove(AgeGroup, " years"),
+             Period   = factor(Period, levels = c("Pre-PSA (1980-1989)",
+                                                  "Post-PSA (2000-2009)"),
+                               labels = c("Pre-PSA era (1980-1989)",
+                                          "PSA era (2000-2009)")),
+             Var      = Count / Pop ^ 2 * 1e5 ^ 2,
+             LCL      = Rate - 1.96 * sqrt(Var),
+             UCL      = Rate + 1.96 * sqrt(Var)) %>% 
+      rename(metric = Rate)
+```
+
+```{r survivaldata}
+pcsurvdataNet <- read.csv("~/../Dropbox/Ruth-Mohamed independent study/Data/PC_survival_cause_specific_kelly_agegroups_CI.csv") %>%
+      mutate_at(5:8, readr::parse_number) %>% 
+      filter(SurvPeriod == "120 mo") %>% 
+      rename(metric = Cause.Spec,
+             SE     = SE.Cause.Spec,
+             LCL    = LCL,
+             UCL    = UCL) %>% 
+      mutate(SurvPeriod = factor(SurvPeriod,
+                                 levels = c("12 mo", "24 mo", "36 mo", "48 mo",
+                                            "60 mo", "72 mo", "84 mo", "96 mo",
+                                            "108 mo", "120 mo")),
+             AgeGroup   = str_remove(AgeGroup, " years"),
+             Period     = factor(Period, levels = c("Pre-PSA (1980-1989)",
+                                                    "Post-PSA (2000-2009)"),
+                                 labels = c("Pre-PSA era (1980-1989)",
+                                            "PSA era (2000-2009)")),
+             Var        = SE ^ 2)
+```
+
+```{r probdeathdata}
+pcDeathProb <- pcsurvdataNet %>% 
+      mutate(metric = 100 - metric, UCLn = 100 - LCL, LCLn = 100 - UCL) %>% 
+      select(-c(LCL, UCL)) %>% 
+      rename(LCL = LCLn, UCL = UCLn)
+```
+
+```{r fpcadata}
+pc_incid_DP <- pcDeathProb %>% 
+      select(AgeGroup, Race, Period, metric, Var) %>% 
+      rename(DeathProb = metric, Var_surv = Var) %>% 
+      full_join(pcinc %>% 
+                      select(AgeGroup, Race, Period, Rate = metric, Var_inc = Var),
+                .) %>% 
+      mutate(metric = Rate * DeathProb,
+             Var = Rate ^ 2 * Var_surv + DeathProb ^ 2 * Var_inc,
+             LCL = metric - 1.96 * sqrt(Var),
+             UCL = metric + 1.96 * sqrt(Var))
+```
+
+# Results
+
+## Annual Prostate Cancer Incidence Rates by Age Group
+
+```{r anninclmcalc}
+annincmod <- abs_to_rel_2(dat         = pcinc,
+                          metric      = metric,
+                          group_var   = c(AgeGroup, Period),
+                          cmpr_var    = Race,
+                          variance    = Var,
+                          numerator   = "Black",
+                          denominator = "White") %>% 
+      
+      lm_reg(data      = .)
+
+anninctrend <- annincmod %>% modOutput(.) %>% 
+      mutate(across(1, ~ mod_params))
+```
+
+Figure \@ref(fig:annincabs) shows annual PCa incidence by age group at diagnosis, calendar period, and race group. Incidence was higher among Black men across all age groups in both calendar periods and generally increased with age but decreased among men 75 years and older in the PSA era, possibly reflecting depletion of the prevalent pool of cases due to screening at younger ages. Figure \@ref(fig:annincrel) shows the Black-to-White PCa incidence RRs with 95% CIs for the same age groups in both pre-PSA and PSA eras, with fitted trend line based on a weighted linear regression model. Table \@ref(tab:anninctrend) presents the results of the weighted linear regression analysis and shows that incidence RRs decrease with age (slope = `r unlist(anninctrend[2, 2])`; 95% CI `r unlist(anninctrend[2, 3])` to `r unlist(anninctrend[2, 4])`, p = `r unlist(anninctrend[2, 5])`) with each consecutive 5-year age group. There is no evidence that incidence RRs changed with age differentially between the pre-PSA and PSA eras (p = `r unlist(anninctrend[4, 5])`).
+
+```{r annincabs, fig.cap="Annual prostate cancer incidence rates by era, race, and age group. Figure shows observed incidence rates per 100,000 individuals with 95% confidence intervals.", crop = TRUE}
+absViz(data      = pcinc,
+       ageCount  = 8,
+       each_val  = 4,
+       metric    = metric,
+       LCL       = LCL,
+       UCL       = UCL,
+       xlabel    = ageGroups_label,
+       cmpr_var  = Race,
+       facet_var = Period,
+       title     = NULL) +
+      scale_y_continuous(name = "Annual incidence rate\n(per 100,000)",
+                         labels = scales::comma)
+```
+
+```{r annincrel, fig.cap="Prostate cancer Black-to-White annual incidence rate ratios by era and age group. Figure shows observed rate ratios with 95% confidence intervals and a fitted trend line based on a weighted linear regression model.", crop = TRUE}
+abs_to_rel_2(dat         = pcinc,
+             metric      = metric,
+             group_var   = c(AgeGroup, Period),
+             cmpr_var    = Race,
+             variance    = Var,
+             numerator   = "Black",
+             denominator = "White") %>% 
+      
+      mutate(fitted = predict(annincmod, .)) %>% 
+      
+      relViz(data         = .,
+             ageCount     = 8,
+             each_val     = 2,
+             xlabel       = ageGroups_label,
+             color_choice = "blue",
+             se           = FALSE,
+             fill_choice  = NULL,
+             facet_var    = Period,
+             title        = NULL) +
+      scale_y_continuous(name = "Incidence rate ratio (IRR)")
+```
+
+```{r anninctrendpdf, eval=FALSE, include=FALSE}
+anninctrend %>% 
+      kableOutput(output = ., caption = "Fitted linear regression of prostate cancer incidence rate ratios by age group at diagnosis and calendar period. Reference categories: 45-49 age group, and the pre-PSA era.") %>% 
+      # https://stackoverflow.com/questions/31007986/knitr-less-greater-than-sign-displayed-as-and
+      gsub("<", "$<$", .)
+```
+
+```{r anninctrend}
+# YAML specifications: https://stackoverflow.com/questions/71008461/flextable-label-not-created-in-rmarkdown
+# https://stackoverflow.com/questions/68761680/flextable-r-how-to-keep-columns-width-after-adding-a-header
+anninctrend %>% flextable() %>% 
+      set_caption(caption = "Fitted linear regression of prostate cancer incidence rate ratios by age group at diagnosis and calendar period. Reference categories: 45-49 age group, and the pre-PSA era.") %>% 
+      bold(part = "header") %>% width(j = 1:5, 1)
+```
+
+## 10-Year Probability of Prostate Cancer-Specific Death
+
+```{r probdeathtrendcalc}
+probdeathmod <- abs_to_rel_2(dat         = pcDeathProb,
+                             metric      = metric,
+                             group_var   = c(AgeGroup, Period),
+                             cmpr_var    = Race,
+                             variance    = Var,
+                             numerator   = "Black",
+                             denominator = "White") %>% 
+      lm_reg(data      = .)
+
+probdeathtrend <- probdeathmod %>% modOutput(.) %>% 
+      mutate(across(1, ~ mod_params))
+```
+
+Figure \@ref(fig:probdeathabs) shows 10-year probability of death from PCa by age group at diagnosis, calendar period, and race group. The probability of death was consistently higher among Black men in both the pre-PSA and PSA eras and increased with age in both race groups. As expected, the probability of PCa death within 10 years was considerably lower in the PSA era than in the pre-PSA era, reflecting both lead time and overdiagnosis among detected cases as well as screening benefit.
+
+Figure \@ref(fig:probdeathrel) shows the Black-to-White relative ratios of 10-year probability of PCa death by age group at diagnosis in the pre-PSA and PSA eras. Fitted regressions suggest increasing ratios with age. However, as shown in Table \@ref(tab:probdeathtrend), the association with age at diagnosis is not statistically significant (slope = `r unlist(probdeathtrend[2, 2])`; 95% CI = `r unlist(probdeathtrend[2, 3])` to `r unlist(probdeathtrend[2, 4])`, p = `r probdeathtrend[2, 5]`). There is no evidence that the relative probability of PCa death changed with age differentially between the pre-PSA and PSA eras (p = `r probdeathtrend[4, 5]`).
+
+```{r probdeathabs, fig.cap="10-year prostate cancer probability of death by era, race, and age group. Figure shows observed incidence rates with 95% confidence intervals.", crop = TRUE}
+pcDeathProb %>% 
+      absViz(data      = .,
+             ageCount  = 8,
+             each_val  = 4,
+             metric    = metric,
+             LCL       = UCL,
+             UCL       = LCL,
+             xlabel    = ageGroups_label,
+             cmpr_var  = Race,
+             facet_var = Period,
+             title     = NULL) +
+      scale_y_continuous(name = "10-year probability of death (%)",
+                         limits = c(0, 100), breaks = seq(0, 100, 20))
+```
+
+```{r probdeathrel, fig.cap="Prostate cancer Black-to-White 10-year probability of death ratios by era and age group. Figure shows observed rate ratios with 95% confidence intervals and a fitted trend line based on a weighted linear regression model.", crop = TRUE}
+abs_to_rel_2(dat         = pcDeathProb,
+             metric      = metric,
+             group_var   = c(AgeGroup, Period),
+             cmpr_var    = Race,
+             variance    = Var,
+             numerator   = "Black",
+             denominator = "White") %>% 
+      
+      mutate(fitted = predict(probdeathmod, .)) %>% 
+      
+      relViz(data         = .,
+             ageCount     = 8,
+             each_val     = 2,
+             xlabel       = ageGroups_label,
+             color_choice = "blue",
+             se           = FALSE,
+             fill_choice  = NULL,
+             facet_var    = Period,
+             title        = NULL) +
+      scale_y_continuous(name = "Ratio of 10-year\nprobability of death")
+```
+
+```{r probdeathtrendpdf, eval=FALSE, include=FALSE}
+probdeathtrend %>% 
+      kableOutput(output = ., caption = "Fitted linear regression of relative ratios of 10-year probability of prostate cancer death by age group at diagnosis and calendar period. Reference categories: 45-49 age group, and the pre-PSA era.") %>% 
+      # https://stackoverflow.com/questions/31007986/knitr-less-greater-than-sign-displayed-as-and
+      gsub("<", "$<$", .)
+```
+
+```{r probdeathtrend}
+# YAML specifications: https://stackoverflow.com/questions/71008461/flextable-label-not-created-in-rmarkdown
+# https://stackoverflow.com/questions/68761680/flextable-r-how-to-keep-columns-width-after-adding-a-header
+probdeathtrend %>% flextable() %>% 
+      set_caption(caption = "Fitted linear regression of relative ratios of 10-year probability of prostate cancer death by age group at diagnosis and calendar period. Reference categories: 45-49 age group, and the pre-PSA era.") %>% 
+      bold(part = "header") %>% width(j = 1:5, 1)
+```
+
+## Incidence of Fatal Prostate Cancer
+
+```{r fpcatrendcalc}
+fpcamod <- abs_to_rel_2(dat         = pc_incid_DP,
+                        metric      = metric,
+                        group_var   = c(AgeGroup, Period),
+                        cmpr_var    = Race,
+                        variance    = Var,
+                        numerator   = "Black",
+                        denominator = "White") %>% 
+      lm_reg(data = .)
+
+fpcatrend <- fpcamod %>% modOutput(.) %>% 
+      mutate(across(1, ~ mod_params))
+```
+
+Figure \@ref(fig:fpcaabs) shows annual incidence of fPCa by age group at diagnosis, calendar period, and race group. fPCa incidence estimates were higher among Black men in both eras, were higher at older ages in both race groups, and were lower in both race groups in the PSA era.
+
+Figure \@ref(fig:fpcarel) shows fPCa incidence rate ratios by age group at diagnosis, calendar period, and race group. Table \@ref(tab:fpcatrend) provides the results of the linear regression fit to the fPCa incidence rate ratios and shows that the relative incidence declines significantly (slope = `r fpcatrend[2, 2]`; 95% CI `r fpcatrend[2, 3]` to `r fpcatrend[2, 4]`; p < 0.001) with each consecutive 5-year age group. There is no evidence that Black-to-White fPCa incidence RRs changed with age differentially between pre-PSA and PSA eras (p = `r unlist(fpcatrend[4, 5])`). 
+
+```{r fpcaabs, fig.cap="Annual incidence rates of fatal prostate cancer by era, race, and age group. Figure shows observed incidence rates with 95% confidence intervals", crop = TRUE}
+pc_incid_DP %>% 
+      absViz(data      = .,
+             ageCount  = 8,
+             each_val  = 4,
+             metric    = metric / 100,
+             LCL       = LCL / 100,
+             UCL       = UCL / 100,
+             xlabel    = ageGroups_label,
+             cmpr_var  = Race,
+             facet_var = Period,
+             title     = NULL) +
+      scale_y_continuous(name = "Annual incidence of fatal\ndisease (per 100,000)",
+                         labels = scales::comma)
+```
+
+```{r fpcarel, fig.cap="Black-to-White annual incidence rate ratios of fatal prostate cancer incidence by era and age group. Figure shows observed rate ratios with 95% confidence intervals and a fitted trend line based on a weighted linear regression model.", crop = TRUE}
+abs_to_rel_2(dat         = pc_incid_DP,
+             metric      = metric,
+             group_var   = c(AgeGroup, Period),
+             cmpr_var    = Race,
+             variance    = Var,
+             numerator   = "Black",
+             denominator = "White") %>% 
+      
+      mutate(fitted = predict(fpcamod, .)) %>% 
+      
+      relViz(data         = .,
+             ageCount     = 8,
+             each_val     = 2,
+             xlabel       = ageGroups_label,
+             color_choice = "blue",
+             se           = FALSE,
+             fill_choice  = NULL,
+             facet_var    = Period,
+             title        = NULL) +
+      scale_y_continuous(name = "fPCa incidence rate ratio (IRR)")
+```
+
+```{r fpcatrendpdf, eval=FALSE, include=FALSE}
+fpcatrend %>% 
+      kableOutput(output = ., caption = "Fitted linear regression of Black-to-White incidence rate ratios of fatal prostate cancer by age group at diagnosis and calendar period. Reference categories: 45-49 age group, and the pre-PSA era.") %>% 
+      # https://stackoverflow.com/questions/31007986/knitr-less-greater-than-sign-displayed-as-and
+      gsub("<", "$<$", .)
+```
+
+```{r fpcatrend}
+# YAML specifications: https://stackoverflow.com/questions/71008461/flextable-label-not-created-in-rmarkdown
+# https://stackoverflow.com/questions/68761680/flextable-r-how-to-keep-columns-width-after-adding-a-header
+fpcatrend %>% flextable() %>% 
+      set_caption(caption = "Fitted linear regression of Black-to-White incidence rate ratios of fatal prostate cancer by age group at diagnosis and calendar period. Reference categories: 45-49 age group, and the pre-PSA era.") %>% 
+      bold(part = "header") %>% width(j = 1:5, 1)
+```
+
+# Discussion
+
+This study examines racial disparities in fPCa incidence and its association with age at diagnosis. It builds on the study by Kelly and colleagues [@kelly_trends_2017] that uncovered the age dependence, by examining the individual incidence and survival components and evaluating possible differences between the pre-PSA and PSA eras. Given the dramatic incidence differential between younger and older men, we felt that relative disparities would be more consistently interpretable across the age continuum than absolute disparities. We found strong evidence that higher fPCa incidence in Black men vs White men at young ages was largely determined by the higher PCa incidence—and not the higher probability of PCa death—in Black men at these ages. We also found that the age dependence in fPCa disparities did not change notably between the pre-PSA and PSA eras.
+
+Screening using the prostate-specific antigen (PSA) test has been shown to be an effective in reducing PCa mortality [@Dean2014; @Hugosson2019; @tsodikov_reconciling_2017]. A modeling study by Gulati and colleagues showed that earlier and more frequent PSA-based screening among high-risk men could potentially reduce the mortality disparity through earlier diagnosis of tumors that otherwise may become metastatic [@Gulati2017]. Shenoy and colleagues studied the differences in PCa epidemiology and outcomes between Caucasian and African American men and concluded that separate PCa screening guidelines are likely necessary to help save the lives of African Americans [@shenoy_african-american_2016]. Tsodikov and colleagues recommended that screening should be initiated at an earlier age for Black men compared to the average-risk population [@tsodikov_is_2017]. Etzioni and Nyame concluded that Black men should be considered eligible for screening 10 years before the rest of the general population [@etzioni_prostate_2021]. In addition, Nyame and colleagues showed that screening earlier and more frequently among Black men would lead to greater projected mortality reductions than standard practices and could narrow the disparity gap [@nyame_impact_2021]. Garraway and colleagues estimated 30% relative risk mortality reduction with baseline testing at ages 40 and 45 for Black men who elect to regular PSA screening without substantially increasing overdiagnosis [@Garraway2024]. 
+
+Results of this analysis are consistent with previous proposals to lower the age to start screening for Black men. While screening will not reduce incidence, starting screening earlier for Black men could bring the survival benefits of screening to younger patients, reducing the excessive disparity in fPCa among younger men. Other interventions to reduce fatality among younger Black cases, such as more frequent screening and improved quality of curative treatment, could also contribute. Black men have historically selected curative treatments such as surgery for localized disease significantly less frequently than White men [@Gray2017; @Weiner2017] and also may be subject to poorer quality treatment [@Nyame2023-ll; @Krimphove2019-ak].
+
+Patterns of age-related disparities in breast cancer mortality have also been informative about disease biology and potential directions for intervention. In their analysis of age-related disparities in breast cancer mortality, San Miguel and colleagues reported more pronounced Black-White survival disparities in younger versus older patients, and suggested that this may reflect more aggressive disease diagnosed among younger non-Hispanic Black women [@san_miguel_age-related_2020]. In another analysis of age distributions of breast cancer diagnosis and mortality, Hendrick and colleagues examined risks of advanced-stage breast cancer among women younger than 50 years and found that minority women collectively had a 58% higher risk compared with non-Hispanic White women. They concluded that this evident disparity justifies the need for more aggressive treatment among minority women with breast cancer [@hendrick_age_2021].
+
+Our analysis used the same interval to define fatal prostate cancer, namely 10 years, for both pre-PSA and PSA eras. This is a relatively short time frame for examining prostate cancer survival, which can extend considerably beyond 10 years for a substantial fraction of cases, particularly in the PSA era. In a sensitivity analysis, we extended the duration defining fatal prostate cancer to 17 years (based on SEER data available for our defined PSA era) and reached a similar conclusion that the main driver of fPCa disparity trends by age are the age-related disparities in disease incidence rather than fatality (Appendix B). We note that, although we observed a dramatic relative disparity in fPCa among young men, these disparities amount to small absolute differences in fPCa rates. Indeed, as one might expect, the absolute disparity in fPCa incidence is far greater for older men than for younger men.
+
+final limitation, Seer registry generealizability [@Kuo2016]
+
+# Conclusion
+
+In conclusion, the pattern of age-specific disparities in fPCa incidence are driven by disparities in incidence more than by disparities in fatality, and these patterns of fPCa incidence did not substantially change between the pre-PSA and PSA eras even though both incidence and disease-specific survival are significantly increased in the PSA era. These findings are broadly consistent with advocacy based on other studies to offer screening to Black men at younger ages compared with White counterparts and to provide them with access to appropriate curative treatment once diagnosed.
+
+\newpage
+
+# Appendix {-}
+
+## A. Estimating the Standard Error of an Estimate Using the Delta Method
+
+The Delta Method is a widely used statistical technique for approximating the standard error of a function of one or more random variables. It provides a useful approximation for their standard errors, especially when the estimates are asymptotically normal [@inbook].
+
+In the case where an estimate is a product of two estimates with known variances ($G(y_1,y_2)=y_1 \times y_2$), then the variance of the product is obtained by the formula:
+
+$$
+var(G(y_1,y_2))= (\mu_1)^2 \times var(y_2)+(\mu_2)^2 \times var(y_1)
+$$
+
+Where $G$ is the product of estimates $y_1$ and $y_2$; and $mu_1$ and $mu_2$ are means of $y_1$ and $y_2$, respectively.
+
+On the other hand, in the case where the estimate is the quotient of two estimates with known variances ($G(y_1,y_2)=y_1 \div y_2$), then the variance of the product is obtained by the formula:
+
+$$
+var(G(y_1,y_2))=\frac{1}{(\mu_2)^2} \times var(y_1)+\frac{(\mu_1)^2}{(\mu_2)^4} \times var(y_2)
+$$
+
+Where $G$ is the quotient of estimates $y_1$ and $y_2$; and $mu_1$ and $mu_2$ are means of $y_1$ and $y_2$, respectively.
+
+## B. Incidence of Fatal Disease within 17 years of Diagnosis
+
+```{r incidDeathProb17}
+pcsurvdataNet17 <- read.csv("C:/Users/da_di/Dropbox/Ruth-Mohamed independent study/Data/PC_survival_cause_specific_kelly_agegroups_CI_17.csv") %>%
+      mutate_at(5:9, readr::parse_number) %>%
+      mutate(AgeGroup = str_remove(AgeGroup, " years"),
+             Period = factor(Period,
+                             levels = c("Pre-PSA (1980-1989)", "Post-PSA (2000-2009)"),
+                             labels = c("Pre-PSA era (1980-1989)", "PSA era (2000-2009)")),
+             DeathProb_17 = 100 - Survival_17,
+             Var_surv_17 = SE_surv_17 ^ 2)
+
+pcIncidSurvNet17 <- pcsurvdataNet17 %>% 
+      full_join(pcinc %>% rename(Rate = metric, Var_inc = Var), .) %>%
+      mutate(IncidDeathProb = Rate * DeathProb_17,
+             Var_prod = Rate ^ 2 * Var_surv_17 + DeathProb_17 ^ 2 * Var_inc,
+             LCL_prod = IncidDeathProb - 1.96 * sqrt(Var_prod),
+             UCL_prod = IncidDeathProb + 1.96 * sqrt(Var_prod))
+```
+
+```{r fpcatrend17calc}
+fpcamod17 <- abs_to_rel_2(dat         = pcIncidSurvNet17,
+                          metric      = IncidDeathProb,
+                          group_var   = c(AgeGroup, Period),
+                          cmpr_var    = Race,
+                          variance    = Var_prod,
+                          numerator   = "Black",
+                          denominator = "White") %>% 
+      lm_reg(data = .)
+
+fpcatrend17 <- fpcamod17 %>% modOutput(.) %>% 
+      mutate(across(1, ~ mod_params))
+```
+
+```{r incidDeathProb17Vizabs, fig.cap="Annual incidence rates of fatal prostate cancer within 17 years of diagnosis by era, race, and age group. Figure shows observed incidence rates with 95% confidence intervals", crop = TRUE}
+pcIncidSurvNet17 %>% 
+      absViz(data      = .,
+             ageCount  = 8,
+             each_val  = 4,
+             metric    = IncidDeathProb / 100,
+             LCL       = LCL_prod / 100,
+             UCL       = UCL_prod / 100,
+             xlabel    = ageGroups_label,
+             cmpr_var  = Race,
+             facet_var = Period,
+             title     = NULL) +
+      scale_y_continuous(name = "Incidence of fatal disease",
+                         labels = scales::comma) #+
+      # theme(plot.margin = unit(c(0, 0, 0, 0), "pt"))
+```
+
+```{r incidDeathProb17Vizrel, fig.cap="Black-to-White annual incidence rate ratios of fatal prostate cancer incidence within 17 years of diagnosis by era and age group. Figure shows observed rate ratios with 95% confidence intervals and a fitted trend line based on a weighted linear regression model.", crop = TRUE}
+abs_to_rel_2(dat         = pcIncidSurvNet17,
+             metric      = IncidDeathProb,
+             group_var   = c(AgeGroup, Period),
+             cmpr_var    = Race,
+             variance    = Var_prod,
+             numerator   = "Black",
+             denominator = "White") %>% 
+      
+      mutate(fitted = predict(fpcamod17, .)) %>% 
+      
+      relViz(data         = .,
+             ageCount     = 8,
+             each_val     = 2,
+             xlabel       = ageGroups_label,
+             color_choice = "blue",
+             se           = FALSE,
+             fill_choice  = NULL,
+             facet_var    = Period,
+             title        = NULL) +
+      scale_y_continuous(name = "fPCa incidence rate ratio (IRR)")
+```
+
+```{r fpcatrend17pdf, eval=FALSE, include=FALSE}
+fpcatrend17 %>% 
+      kableOutput(output = ., caption = "Fitted linear regression of Black-to-White incidence rate ratios of fatal prostate cancer by age group at diagnosis and calendar period. Reference categories: 45-49 age group, and the pre-PSA era.") %>% 
+      # https://stackoverflow.com/questions/31007986/knitr-less-greater-than-sign-displayed-as-and
+      gsub("<", "$<$", .)
+```
+
+```{r fpcatrend17}
+# YAML specifications: https://stackoverflow.com/questions/71008461/flextable-label-not-created-in-rmarkdown
+# https://stackoverflow.com/questions/68761680/flextable-r-how-to-keep-columns-width-after-adding-a-header
+fpcatrend17 %>% flextable() %>% 
+      set_caption(caption = "Fitted linear regression of Black-to-White incidence rate ratios of fatal prostate cancer within 17 years of diagnosis by age group at diagnosis and calendar period. Reference categories: 45-49 age group, and the pre-PSA era.") %>% 
+      bold(part = "header") %>% width(j = 1:5, 1)
+```
+
+\newpage
+
+# References
