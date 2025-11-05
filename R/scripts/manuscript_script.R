@@ -1,6 +1,6 @@
 
 ### Manuscript: "Age-Specific Racial Disparities in the Incidence of Fatal Prostate Cancer: An Analytic Deconstruction"
-### author: Mohamed Albirair, MBBS, MPH, PhD
+### author: Mohamed Albirair, MBBS, PhD; Yaw Nyame, MD, Roman Gulati, PhD; Ruth Etzioni, PhD
 
 ## Packages
 library(tidyverse)
