@@ -4,3 +4,4 @@
 .Ruserdata
 R/scripts/file_loc.R
 R/functions/abs_to_rel.R
+R/functions/relViz_modf.R
